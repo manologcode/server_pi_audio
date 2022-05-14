@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServerPi Audio</title>
+    <link rel="icon" href="images/icon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="content">
+        <img src="images/logo.png">
+        <h1>ServerPi Audio</h1>
+        <div id="buttons"></div>    
+    </div>
+   <script src="menu.js"></script>
+   <script>
+
+        function elementButton(data) {
+            const { name, description, url, color = false, logo = false } = data
+            const css_color = color ? color : "#505050"
+            const icon = logo ? `<img src="${logo}"/>` : ""
+
+            return (
+                `<a href="${url}" class="btn" style='background-color:${css_color}'>
+                    ${icon}
+                    <h4>${name} </h4>
+                    <p>${description} </p>
+                </a>`
+            )
+        }
+
+        const buttons = document.getElementById("buttons")
+
+        elements.forEach(item => {
+            buttons.insertAdjacentHTML('beforeend', elementButton(item))
+        })
+
+   </script>
+</body>
+</html>
