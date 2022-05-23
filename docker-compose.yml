@@ -1,6 +1,14 @@
 version: '3.1'
 
 services:
+  start_page:
+    image: nginx:alpine
+    restart: always
+    container_name: start_page
+    ports:
+      - 80:80
+    volumes:
+      - ./start_page:/usr/share/nginx/html:ro
 
   filebrowser:
     image: filebrowser/filebrowser
@@ -8,12 +16,29 @@ services:
     container_name: filebrowser
     user: 1000:1000
     ports:
-      - "8080:80"
+      - "8088:80"
     environment:
       TZ: Europe/Madrid
     volumes:
       - /home/pi/data:/srv
       - /home/pi/filebrowser/filebrowser.db:/database.db
+
+  rpi-monitor:
+    image: michaelmiklis/rpi-monitor:latest
+    container_name: rpi-monitor
+    volumes:
+      - /opt/vc:/opt/vc
+      - /boot:/boot
+      - /sys:/dockerhost/sys:ro
+      - /etc:/dockerhost/etc:ro
+      - /proc:/dockerhost/proc:ro
+      - /usr/lib:/dockerhost/usr/lib:ro
+    devices:
+      - "/dev/vchiq:/dev/vchiq" 
+      - "/dev/vcsm:/dev/vcsm"  
+    restart: unless-stopped
+    ports:
+      - 8888:8888
 
   navidrome:
     image: deluan/navidrome:latest
@@ -25,7 +50,7 @@ services:
     environment:
       ND_LOGLEVEL: info
     volumes:
-      - /home/pi/data:/music
+      - /home/pi/data/youtube_audios/musics:/music
       - /home/pi/navidrome/data:/data
 
   yt_dlp:
@@ -34,7 +59,7 @@ services:
     container_name: yt_dlp
     command: gunicorn wsgi:app  -w 5 -b :5000 --reload
     ports:
-      - "5010:5000"
+      - "5020:5000"
     volumes:
       - /home/pi/data/youtube_audios:/youtube_audios
 
@@ -44,7 +69,26 @@ services:
     container_name: text_to_mp3
     command: gunicorn wsgi:app  -w 5 -b :5000 --reload
     ports:
-      - "5020:5000"
+      - "5010:5000"
     volumes:
       - /home/pi/data/text_audios:/text_audios
 
+  watchtower:
+    image: containrrr/watchtower 
+    restart: always
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    environment:
+      - AUDIOBOOKSHELF_UID=99
+      - AUDIOBOOKSHELF_GID=100
+    ports:
+      - 13378:80
+    volumes:
+      - /home/pi/data/youtube_audios/audiobooks:/audiobooks
+      - /home/pi/data/text_audios:/podcasts
+      - /home/pi/audiobookshelf/config:/config
+      - /home/pi/audiobookshelf/metadata:/metadata
