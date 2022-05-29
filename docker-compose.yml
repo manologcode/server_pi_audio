@@ -8,7 +8,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./start_page:/usr/share/nginx/html:ro
+      - /home/pi/start_page:/usr/share/nginx/html:ro
 
   filebrowser:
     image: filebrowser/filebrowser
@@ -34,8 +34,8 @@ services:
       - /proc:/dockerhost/proc:ro
       - /usr/lib:/dockerhost/usr/lib:ro
     devices:
-      - "/dev/vchiq:/dev/vchiq" 
-      - "/dev/vcsm:/dev/vcsm"  
+      - /dev/vchiq
+      - /dev/vcs
     restart: unless-stopped
     ports:
       - 8888:8888
@@ -57,7 +57,7 @@ services:
     image: manologcode/yt_dlp
     restart: always
     container_name: yt_dlp
-    command: gunicorn wsgi:app  -w 5 -b :5000 --reload
+    command: gunicorn wsgi:app  --timeout 1200 -w 5 -b :5000 --reload
     ports:
       - "5020:5000"
     volumes:
@@ -67,7 +67,7 @@ services:
     image: manologcode/text_to_mp3
     restart: always
     container_name: text_to_mp3
-    command: gunicorn wsgi:app  -w 5 -b :5000 --reload
+    command: gunicorn wsgi:app  --timeout 120 -w 5 -b :5000 --reload
     ports:
       - "5010:5000"
     volumes:

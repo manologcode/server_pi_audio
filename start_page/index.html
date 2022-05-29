@@ -18,10 +18,10 @@
    <script>
 
         function elementButton(data) {
-            const { name, description, url, color = false, logo = false } = data
+            const { name, description, port_app, color = false, logo = false } = data
             const css_color = color ? color : "#505050"
             const icon = logo ? `<img src="${logo}"/>` : ""
-
+            let url = window.location.origin + port_app
             return (
                 `<a href="${url}" class="btn" style='background-color:${css_color}'>
                     ${icon}
@@ -30,9 +30,8 @@
                 </a>`
             )
         }
-
         const buttons = document.getElementById("buttons")
-
+        
         elements.forEach(item => {
             buttons.insertAdjacentHTML('beforeend', elementButton(item))
         })
